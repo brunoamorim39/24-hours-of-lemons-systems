@@ -1,0 +1,23 @@
+# Car 1 Hardware Configuration
+# Car-specific pin mappings and I2C addresses
+
+# GPIO pin mappings (BCM numbering)
+gpio:
+  # DRS inputs
+  DRS_BTN: 17                   # DRS activation button
+  BRAKE_SWITCH: 27              # Brake pedal switch (safety interlock)
+
+  # DRS outputs
+  DRS_LED: 22                   # DRS status LED
+
+  # Future: radio, additional sensors, etc.
+
+# I2C device addresses
+i2c:
+  PCA9685_ADDR: 0x40            # PCA9685 PWM driver (servo controller)
+  # MCP3008_ADDR: 0x68          # Future: ADC for analog sensors
+
+# Car-specific notes
+# - This is the blue Honda Civic
+# - DRS servo mounted on rear wing
+# - Brake switch is normally-open (active-low)

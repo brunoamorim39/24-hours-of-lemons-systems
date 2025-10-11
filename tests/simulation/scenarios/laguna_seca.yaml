@@ -1,0 +1,81 @@
+# Laguna Seca Track Simulation
+# Simplified version for testing DRS and telemetry
+
+track:
+  name: "Laguna Seca"
+  length_m: 3602
+  sectors:
+    - name: "Start/Finish to Turn 1"
+      start_m: 0
+      end_m: 300
+      speed_kph: [180, 120]       # Braking zone
+      brake: true
+      drs_zone: false
+
+    - name: "Turn 1"
+      start_m: 300
+      end_m: 450
+      speed_kph: [120, 100]
+      brake: false
+      drs_zone: false
+
+    - name: "Turn 2-3-4 Complex"
+      start_m: 450
+      end_m: 800
+      speed_kph: [100, 110]
+      brake: false
+      drs_zone: false
+
+    - name: "Turn 5 Approach"
+      start_m: 800
+      end_m: 1000
+      speed_kph: [110, 150]       # Accelerating
+      brake: false
+      drs_zone: true              # ← DRS ZONE (short straight)
+
+    - name: "Turn 5-6"
+      start_m: 1000
+      end_m: 1200
+      speed_kph: [150, 180]       # Fast sweeper
+      brake: false
+      drs_zone: false
+
+    - name: "Turn 6-7 to Corkscrew"
+      start_m: 1200
+      end_m: 1400
+      speed_kph: [180, 140]       # Brake for Corkscrew
+      brake: true
+      drs_zone: false
+
+    - name: "Corkscrew (Turn 8-8A)"
+      start_m: 1400
+      end_m: 1700
+      speed_kph: [140, 80]        # Hard braking downhill
+      brake: true
+      drs_zone: false
+
+    - name: "Turn 9 Exit"
+      start_m: 1700
+      end_m: 1900
+      speed_kph: [80, 120]
+      brake: false
+      drs_zone: false
+
+    - name: "Turn 10-11"
+      start_m: 1900
+      end_m: 2200
+      speed_kph: [120, 140]
+      brake: false
+      drs_zone: false
+
+    - name: "Front Straight"
+      start_m: 2200
+      end_m: 3602
+      speed_kph: [140, 180]       # Full acceleration
+      brake: false
+      drs_zone: true              # ← DRS ZONE (main straight)
+
+driver_behavior:
+  reaction_time_ms: 200           # Human delay
+  drs_activation_threshold_kph: 140  # Only activate DRS above this speed
+  brake_drs_disable: true         # Brake should immediately disable DRS

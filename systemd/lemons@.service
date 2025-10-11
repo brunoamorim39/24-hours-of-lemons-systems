@@ -1,0 +1,39 @@
+[Unit]
+Description=24 Hours of Lemons %i app
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/opt/lemons
+Environment="CAR_ID=car1"
+Environment="PYTHONUNBUFFERED=1"
+
+# Use virtual environment Python
+ExecStart=/opt/lemons/.venv/bin/python3 -m apps.%i.main \
+    --config /opt/lemons/config/roles/%i.yaml \
+    --car /opt/lemons/config/cars/${CAR_ID}.yaml
+
+# Restart on failure
+Restart=always
+RestartSec=5
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lemons-%i
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource limits (optional)
+MemoryLimit=512M
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target
