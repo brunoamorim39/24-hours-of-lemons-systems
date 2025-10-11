@@ -24,7 +24,7 @@ ruff==0.1.9
 
 # Utilities
 python-dateutil==2.8.2
-requests==2.31.0
+requests==2.32.4
 
 # Telemetry Visualization (charts rendered client-side with Apache ECharts)
 pandas==2.1.4
