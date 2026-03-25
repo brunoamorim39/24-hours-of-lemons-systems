@@ -1,4 +1,4 @@
-# 🏁 TRACKSIDE QUICK REFERENCE
+# TRACKSIDE QUICK REFERENCE
 
 **Print this page and keep in pit box!**
 
@@ -6,104 +6,62 @@
 
 ## PRE-RACE CHECKLIST
 
-- [ ] Spare SD cards in waterproof case (labeled)
-- [ ] Laptop charged + power adapter
-- [ ] Laptop connected to pit WiFi network
-- [ ] Know Pi IP address: `__________________`
-- [ ] Verify systems before qualifying:
-  ```
-  make check-pi HOST=<ip>
-  ```
+- [ ] Laptop charged + USB-C cable for ESP32
+- [ ] ESP32 powered and running (verify serial output)
+- [ ] DRS button test: press → wing opens, press → wing closes
+- [ ] Brake interlock test: activate DRS → press brake → wing closes
+- [ ] PTT test: hold button → radio keys, release → radio unkeys
+- [ ] Servo power: 12V through fuse, common ground with ESP32
 
 ---
 
-## EMERGENCY: PI FAILED
+## EMERGENCY: ESP32 NOT RESPONDING
 
-### OPTION 1: Spare SD Card Swap (2 min)
-
-**Car is coming in NOW:**
-
-1. ⚡ Grab spare SD card from pit box
-2. ⚡ Power off Pi in car
-3. ⚡ Swap SD card
-4. ⚡ Power on Pi
-5. ⏱️  Wait 60 seconds for boot
-6. ✅ Verify: `make check-pi HOST=<ip>`
-
-**SEND CAR BACK OUT!**
-
----
-
-### OPTION 2: Remote Deploy (5-10 min)
-
-**If no spare SD card available:**
+### Re-Upload Firmware (2 min)
 
 ```bash
-# From your laptop:
-make deploy HOST=<pi-ip> CAR=car1
+# 1. Connect laptop to ESP32 via USB-C
+# 2. Upload firmware:
+make upload-firmware PORT=/dev/tty.usbserial-0001
+
+# 3. Reset:
+make esp32-reset PORT=/dev/tty.usbserial-0001
 ```
 
-Wait for "DEPLOYMENT SUCCESSFUL"
-
----
-
-## CODE UPDATE (Between Sessions)
-
-**New code to deploy:**
+### Check Serial Output
 
 ```bash
-make deploy HOST=<pi-ip> CAR=car1
+make esp32-monitor PORT=/dev/tty.usbserial-0001
 ```
+
+Look for error messages. Common issues:
+- Boot loop = import error in firmware code
+- No output = wrong serial port or bad USB cable
 
 ---
 
 ## TROUBLESHOOTING
 
-### Cannot Reach Pi
-
-```bash
-# 1. Check power to Pi
-# 2. Verify network:
-ping <pi-ip>
-
-# 3. Check WiFi antenna connection
-```
-
-### Service Not Running
-
-```bash
-# Check logs:
-make logs HOST=<pi-ip> APP=drs
-make logs HOST=<pi-ip> APP=telemetry
-
-# Restart service (from laptop):
-ssh pi@<pi-ip> "sudo systemctl restart lemons@drs"
-```
-
-### Dashboard Not Accessible
-
-```bash
-# 1. Verify telemetry service:
-make check-pi HOST=<pi-ip>
-
-# 2. Check network:
-curl http://<pi-ip>:5000/healthz
-
-# 3. Check firewall (on Pi):
-ssh pi@<pi-ip> "sudo ufw status"
-```
-
 ### DRS Not Responding
 
-```bash
-# 1. Check DRS service:
-ssh pi@<pi-ip> "sudo systemctl status lemons@drs"
+1. Check ESP32 power (USB or 5V from buck converter)
+2. Check serial output: `make esp32-monitor`
+3. Check servo power (12V through fuse)
+4. Check GPIO20 button wiring (should short to GND)
+5. Re-upload firmware if needed
 
-# 2. Check servo power supply (external 5V)
-# 3. Check GPIO connections
-# 4. Test manually:
-curl http://<pi-ip>:5001/status
-```
+### PTT Not Working
+
+1. Check GPIO21 button wiring
+2. Check GPIO23 → 1kΩ → 2N2222 transistor wiring
+3. Check Baofeng radio power and connection
+4. Check serial output for PTT messages
+
+### Servo Jitters or No Movement
+
+1. Check common ground between ESP32 and servo
+2. Check 12V supply to servo (through 5A fuse)
+3. Check GPIO18 signal wire to servo
 
 ---
 
@@ -111,73 +69,24 @@ curl http://<pi-ip>:5001/status
 
 | Task | Command |
 |------|---------|
-| Check Pi health | `make check-pi HOST=<ip>` |
-| Deploy all | `make deploy HOST=<ip> CAR=car1` |
-| View DRS logs | `make logs HOST=<ip> APP=drs` |
-| View telemetry logs | `make logs HOST=<ip> APP=telemetry` |
-| SSH to Pi | `ssh pi@<ip>` |
-| Restart DRS | `ssh pi@<ip> "sudo systemctl restart lemons@drs"` |
-| Restart telemetry | `ssh pi@<ip> "sudo systemctl restart lemons@telemetry"` |
+| Upload firmware | `make upload-firmware PORT=<port>` |
+| Serial monitor | `make esp32-monitor PORT=<port>` |
+| Reset ESP32 | `make esp32-reset PORT=<port>` |
 
 ---
 
-## DASHBOARD URLS
+## CIRCUIT DIAGRAM
 
-- **Telemetry Dashboard:** `http://<pi-ip>:5000`
-- **DRS API Status:** `http://<pi-ip>:5001/status`
-- **Health Checks:** `http://<pi-ip>:5000/healthz`, `http://<pi-ip>:5001/healthz`
-
----
-
-## PI INFO
-
-**Default Credentials:**
-- Username: `pi`
-- Password: `raspberry` (or as configured)
-
-**Our Pi Hostnames:**
-- Car 1: `lemons-car1.local` or `192.168.1.___`
-- Car 2: `lemons-car2.local` or `192.168.1.___`
-
----
-
-## CONTACT INFO (IF STUCK)
-
-**Team Lead:** `______________________`
-
-**Phone:** `______________________`
-
----
-
-## GOLDEN IMAGE INFO
-
-**Spare SD Cards:**
-- Location: `______________________`
-- Last Updated: `______________________`
-- Version: `______________________`
-
-**To Create New Golden Image (at home):**
-
-1. Configure one Pi perfectly
-2. Run: `make create-image`
-3. Flash to spares: `make flash-spare SD=/dev/sdX`
-4. Label and store in pit box
+Open `docs/e46-circuit.html` in any browser for full wiring reference.
 
 ---
 
 ## RACE DAY NOTES
 
-Use this space for track-specific info:
-
 ```
-Network SSID: _______________________
-Network Pass: _______________________
+ESP32 Serial Port: _______________________
 
-Pi IP Address: _______________________
-
-Special Config: _______________________
-_______________________________________
-_______________________________________
+DRS Open Angle: _______ Closed Angle: _______
 
 Issues Encountered: _______________________
 _______________________________________
@@ -187,5 +96,3 @@ _______________________________________
 ---
 
 **Last Updated:** `________________` **By:** `________________`
-
-**🏁 Remember: Keep calm, follow checklist, send it! 🏁**

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    font-size: 20px;
+    color: #58a6ff;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 20px;
+  }
+  svg {
+    max-width: 900px;
+    width: 100%;
+  }
+  .parts-list {
+    max-width: 900px;
+    width: 100%;
+    margin-top: 28px;
+    border-top: 1px solid #21262d;
+    padding-top: 20px;
+  }
+  .parts-list h2 {
+    font-size: 14px;
+    color: #58a6ff;
+    margin-bottom: 12px;
+  }
+  .parts-list table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .parts-list th {
+    text-align: left;
+    color: #8b949e;
+    padding: 6px 10px;
+    border-bottom: 1px solid #21262d;
+    font-weight: 500;
+  }
+  .parts-list td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #161b22;
+    color: #c9d1d9;
+  }
+  .parts-list td:first-child { color: #79c0ff; }
+  .pin-table {
+    max-width: 900px;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .pin-table h2 {
+    font-size: 14px;
+    color: #58a6ff;
+    margin-bottom: 12px;
+  }
+  .pin-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .pin-table th {
+    text-align: left;
+    color: #8b949e;
+    padding: 6px 10px;
+    border-bottom: 1px solid #21262d;
+    font-weight: 500;
+  }
+  .pin-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #161b22;
+    color: #c9d1d9;
+  }
+</style>
+</head>
+<body>
+
+<h1>Lemons DRS Controller — ESP32 Circuit</h1>
+<div class="subtitle">24 Hours of Lemons / E46 325Ci — In-car controller board</div>
+
+<svg viewBox="0 0 920 780" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#f85149" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="arr-grn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="920" height="780" fill="#0d1117" rx="8"/>
+
+  <!-- ============ SECTION: POWER SUPPLY (top left) ============ -->
+  <text x="30" y="30" fill="#58a6ff" font-size="13" font-family="monospace" font-weight="bold">POWER SUPPLY</text>
+  <line x1="30" y1="36" x2="160" y2="36" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Battery -->
+  <rect x="30" y="52" width="100" height="44" rx="5" fill="none" stroke="#f85149" stroke-width="1.5"/>
+  <text x="80" y="70" text-anchor="middle" fill="#f85149" font-size="11" font-family="monospace" font-weight="bold">12V Battery</text>
+  <text x="80" y="84" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">Car electrical</text>
+
+  <!-- Wire from battery +12V -->
+  <line x1="130" y1="64" x2="180" y2="64" stroke="#f85149" stroke-width="1.5" marker-end="url(#arr-red)"/>
+  <text x="155" y="58" text-anchor="middle" fill="#f85149" font-size="8" font-family="monospace">+12V</text>
+
+  <!-- TVS Diode -->
+  <rect x="185" y="48" width="90" height="44" rx="5" fill="#161b22" stroke="#d29922" stroke-width="1.2"/>
+  <text x="230" y="66" text-anchor="middle" fill="#d29922" font-size="10" font-family="monospace" font-weight="bold">P6KE15A</text>
+  <text x="230" y="80" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">TVS diode</text>
+  <!-- TVS to GND -->
+  <line x1="230" y1="92" x2="230" y2="110" stroke="#d29922" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="230" y="120" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">GND</text>
+
+  <!-- Wire from TVS to cap -->
+  <line x1="275" y1="64" x2="310" y2="64" stroke="#f85149" stroke-width="1.2"/>
+
+  <!-- Filter cap -->
+  <rect x="310" y="48" width="80" height="44" rx="5" fill="#161b22" stroke="#d29922" stroke-width="1.2"/>
+  <text x="350" y="66" text-anchor="middle" fill="#d29922" font-size="10" font-family="monospace" font-weight="bold">100μF</text>
+  <text x="350" y="80" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">Electrolytic</text>
+  <!-- Cap to GND -->
+  <line x1="350" y1="92" x2="350" y2="110" stroke="#d29922" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="350" y="120" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">GND</text>
+
+  <!-- Junction dot -->
+  <circle cx="295" cy="64" r="3" fill="#f85149"/>
+
+  <!-- Wire down to buck converter -->
+  <line x1="295" y1="64" x2="295" y2="145" stroke="#f85149" stroke-width="1.2"/>
+
+  <!-- Buck converter -->
+  <rect x="220" y="145" width="150" height="50" rx="5" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="295" y="166" text-anchor="middle" fill="#3fb950" font-size="11" font-family="monospace" font-weight="bold">LM2596 Buck</text>
+  <text x="295" y="182" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">12V → 5V</text>
+
+  <!-- 5V output wire -->
+  <line x1="370" y1="170" x2="440" y2="170" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-grn)"/>
+  <text x="405" y="163" text-anchor="middle" fill="#3fb950" font-size="9" font-family="monospace" font-weight="bold">5V out</text>
+
+  <!-- ============ ESP32 (center) ============ -->
+  <rect x="445" y="60" width="180" height="340" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+  <text x="535" y="88" text-anchor="middle" fill="#58a6ff" font-size="14" font-family="monospace" font-weight="bold">ESP32</text>
+  <text x="535" y="104" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">Dev Board</text>
+
+  <!-- 5V pin connection -->
+  <line x1="440" y1="170" x2="445" y2="170" stroke="#3fb950" stroke-width="1.5"/>
+  <!-- Show pin label inside ESP32 -->
+  <text x="458" y="174" fill="#3fb950" font-size="9" font-family="monospace">5V</text>
+
+  <!-- GND pin -->
+  <text x="458" y="194" fill="#8b949e" font-size="9" font-family="monospace">GND</text>
+  <line x1="445" y1="190" x2="410" y2="190" stroke="#8b949e" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="395" y="194" text-anchor="end" fill="#8b949e" font-size="8" font-family="monospace">⏚ GND bus</text>
+
+  <!-- 3.3V output pin -->
+  <text x="458" y="214" fill="#d29922" font-size="9" font-family="monospace">3V3</text>
+  <line x1="445" y1="210" x2="410" y2="210" stroke="#d29922" stroke-width="1"/>
+  <text x="395" y="214" text-anchor="end" fill="#d29922" font-size="8" font-family="monospace">3.3V rail →</text>
+
+  <!-- GPIO18 - Servo -->
+  <text x="612" y="148" fill="#e3b341" font-size="9" font-family="monospace">GPIO18</text>
+  <line x1="625" y1="150" x2="700" y2="150" stroke="#e3b341" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- GPIO19 - Brake -->
+  <text x="458" y="254" fill="#f0883e" font-size="9" font-family="monospace">GPIO19</text>
+
+  <!-- GPIO20 - DRS button -->
+  <text x="458" y="284" fill="#bc8cff" font-size="9" font-family="monospace">GPIO20</text>
+
+  <!-- GPIO21 - PTT button -->
+  <text x="458" y="314" fill="#bc8cff" font-size="9" font-family="monospace">GPIO21</text>
+
+  <!-- GPIO22 - Spare -->
+  <text x="458" y="344" fill="#bc8cff" font-size="9" font-family="monospace">GPIO22</text>
+
+  <!-- GPIO23 - PTT output -->
+  <text x="612" y="198" fill="#f0883e" font-size="9" font-family="monospace">GPIO23</text>
+  <line x1="625" y1="200" x2="700" y2="200" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Internal pull-up note -->
+  <text x="535" y="380" text-anchor="middle" fill="#484f58" font-size="8" font-family="monospace">Internal pull-ups enabled</text>
+  <text x="535" y="392" text-anchor="middle" fill="#484f58" font-size="8" font-family="monospace">on GPIO19-22 in firmware</text>
+
+  <!-- ============ SERVO OUTPUT (right side, top) ============ -->
+  <text x="710" y="118" fill="#58a6ff" font-size="13" font-family="monospace" font-weight="bold">SERVO OUTPUT</text>
+  <line x1="710" y1="124" x2="830" y2="124" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Servo box -->
+  <rect x="710" y="135" width="120" height="50" rx="5" fill="#161b22" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="770" y="155" text-anchor="middle" fill="#e3b341" font-size="10" font-family="monospace" font-weight="bold">RC Servo</text>
+  <text x="770" y="170" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">PWM 50Hz signal</text>
+
+  <!-- Servo power - direct from 12V through fuse -->
+  <text x="855" y="152" fill="#f85149" font-size="8" font-family="monospace">+12V</text>
+  <line x1="830" y1="148" x2="850" y2="148" stroke="#f85149" stroke-width="1"/>
+  <text x="855" y="168" fill="#8b949e" font-size="8" font-family="monospace">via 5A fuse</text>
+  <text x="855" y="180" fill="#8b949e" font-size="8" font-family="monospace">from battery</text>
+
+  <!-- ============ PTT OUTPUT (right side, middle) ============ -->
+  <text x="710" y="210" fill="#58a6ff" font-size="13" font-family="monospace" font-weight="bold">PTT OUTPUT</text>
+  <line x1="710" y1="216" x2="830" y2="216" stroke="#21262d" stroke-width="1"/>
+
+  <!-- 1K base resistor -->
+  <rect x="710" y="225" width="55" height="30" rx="4" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+  <text x="737" y="244" text-anchor="middle" fill="#d29922" font-size="9" font-family="monospace">1kΩ</text>
+
+  <!-- Wire to transistor -->
+  <line x1="765" y1="240" x2="790" y2="240" stroke="#f0883e" stroke-width="1.2"/>
+
+  <!-- 2N2222 transistor -->
+  <rect x="790" y="225" width="70" height="30" rx="4" fill="#161b22" stroke="#f0883e" stroke-width="1.2"/>
+  <text x="825" y="238" text-anchor="middle" fill="#f0883e" font-size="9" font-family="monospace" font-weight="bold">2N2222</text>
+  <text x="825" y="249" text-anchor="middle" fill="#8b949e" font-size="7" font-family="monospace">NPN</text>
+
+  <!-- Baofeng radio -->
+  <rect x="790" y="268" width="90" height="36" rx="5" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+  <text x="835" y="284" text-anchor="middle" fill="#c9d1d9" font-size="9" font-family="monospace" font-weight="bold">Baofeng PTT</text>
+  <text x="835" y="296" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">switches to GND</text>
+  <line x1="825" y1="255" x2="825" y2="268" stroke="#8b949e" stroke-width="1"/>
+
+  <!-- ============ BRAKE INPUT (left side) ============ -->
+  <text x="30" y="250" fill="#58a6ff" font-size="13" font-family="monospace" font-weight="bold">BRAKE INPUT</text>
+  <line x1="30" y1="256" x2="155" y2="256" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Brake light wire -->
+  <rect x="30" y="270" width="110" height="44" rx="5" fill="none" stroke="#f85149" stroke-width="1.2"/>
+  <text x="85" y="288" text-anchor="middle" fill="#f85149" font-size="10" font-family="monospace" font-weight="bold">Brake Wire</text>
+  <text x="85" y="302" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">12V when pressed</text>
+
+  <!-- 1K resistor -->
+  <line x1="140" y1="286" x2="175" y2="286" stroke="#f85149" stroke-width="1.2"/>
+  <rect x="175" y="274" width="55" height="30" rx="4" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+  <text x="202" y="293" text-anchor="middle" fill="#d29922" font-size="9" font-family="monospace">1kΩ</text>
+
+  <!-- Wire to optocoupler LED side -->
+  <line x1="230" y1="286" x2="260" y2="286" stroke="#f85149" stroke-width="1.2"/>
+
+  <!-- PC817 optocoupler -->
+  <rect x="260" y="264" width="110" height="80" rx="5" fill="#161b22" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="315" y="284" text-anchor="middle" fill="#79c0ff" font-size="11" font-family="monospace" font-weight="bold">PC817</text>
+  <text x="315" y="298" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">Optocoupler</text>
+
+  <!-- LED side label -->
+  <text x="275" y="318" fill="#f85149" font-size="7" font-family="monospace">LED in</text>
+  <!-- Phototransistor side label -->
+  <text x="330" y="318" fill="#3fb950" font-size="7" font-family="monospace">Photo out</text>
+
+  <!-- Isolation line -->
+  <line x1="315" y1="308" x2="315" y2="336" stroke="#484f58" stroke-width="0.5" stroke-dasharray="2,2"/>
+  <text x="315" y="340" text-anchor="middle" fill="#484f58" font-size="7" font-family="monospace">galvanic isolation</text>
+
+  <!-- Optocoupler output to ESP32 GPIO19 -->
+  <line x1="370" y1="286" x2="395" y2="286" stroke="#3fb950" stroke-width="1.2"/>
+
+  <!-- 10K pull-up resistor -->
+  <rect x="395" y="234" width="40" height="24" rx="4" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+  <text x="415" y="250" text-anchor="middle" fill="#d29922" font-size="8" font-family="monospace">10kΩ</text>
+  <!-- Pull-up to 3.3V -->
+  <line x1="415" y1="234" x2="415" y2="220" stroke="#d29922" stroke-width="1"/>
+  <text x="415" y="216" text-anchor="middle" fill="#d29922" font-size="7" font-family="monospace">3.3V</text>
+
+  <!-- Wire from junction to GPIO19 -->
+  <circle cx="415" cy="286" r="2.5" fill="#3fb950"/>
+  <line x1="415" y1="258" x2="415" y2="286" stroke="#d29922" stroke-width="1"/>
+  <line x1="415" y1="250" x2="445" y2="250" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Optocoupler LED GND -->
+  <line x1="280" y1="344" x2="280" y2="360" stroke="#8b949e" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="280" y="370" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">GND (car)</text>
+
+  <!-- Optocoupler output GND -->
+  <line x1="350" y1="344" x2="350" y2="360" stroke="#8b949e" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="350" y="370" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">GND (ESP)</text>
+
+  <!-- ============ BUTTON INPUTS (bottom left) ============ -->
+  <text x="30" y="430" fill="#58a6ff" font-size="13" font-family="monospace" font-weight="bold">STEERING WHEEL BUTTONS</text>
+  <line x1="30" y1="436" x2="240" y2="436" stroke="#21262d" stroke-width="1"/>
+
+  <!-- XLR5 connector -->
+  <rect x="30" y="450" width="110" height="160" rx="6" fill="#161b22" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="85" y="472" text-anchor="middle" fill="#bc8cff" font-size="11" font-family="monospace" font-weight="bold">XLR5</text>
+  <text x="85" y="488" text-anchor="middle" fill="#8b949e" font-size="8" font-family="monospace">Panel mount</text>
+
+  <!-- Pin labels inside XLR box -->
+  <text x="45" y="515" fill="#8b949e" font-size="9" font-family="monospace">Pin 1</text>
+  <text x="100" y="515" fill="#8b949e" font-size="8" font-family="monospace">GND</text>
+
+  <text x="45" y="535" fill="#bc8cff" font-size="9" font-family="monospace">Pin 2</text>
+  <text x="100" y="535" fill="#8b949e" font-size="8" font-family="monospace">DRS</text>
+
+  <text x="45" y="555" fill="#bc8cff" font-size="9" font-family="monospace">Pin 3</text>
+  <text x="100" y="555" fill="#8b949e" font-size="8" font-family="monospace">PTT</text>
+
+  <text x="45" y="575" fill="#bc8cff" font-size="9" font-family="monospace">Pin 4</text>
+  <text x="100" y="575" fill="#8b949e" font-size="8" font-family="monospace">Spare</text>
+
+  <text x="45" y="595" fill="#484f58" font-size="9" font-family="monospace">Pin 5</text>
+  <text x="100" y="595" fill="#484f58" font-size="8" font-family="monospace">N/C</text>
+
+  <!-- Wires from XLR to ESP32 GPIOs -->
+  <!-- GND -->
+  <line x1="140" y1="511" x2="200" y2="511" stroke="#8b949e" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="215" y="515" fill="#8b949e" font-size="8" font-family="monospace">→ GND bus</text>
+
+  <!-- DRS → GPIO20 -->
+  <line x1="140" y1="531" x2="250" y2="531" stroke="#bc8cff" stroke-width="1.2"/>
+  <line x1="250" y1="531" x2="250" y2="280" stroke="#bc8cff" stroke-width="1.2"/>
+  <line x1="250" y1="280" x2="445" y2="280" stroke="#bc8cff" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="300" y="274" fill="#bc8cff" font-size="8" font-family="monospace">DRS btn → GPIO20</text>
+
+  <!-- PTT → GPIO21 -->
+  <line x1="140" y1="551" x2="270" y2="551" stroke="#bc8cff" stroke-width="1.2"/>
+  <line x1="270" y1="551" x2="270" y2="310" stroke="#bc8cff" stroke-width="1.2"/>
+  <line x1="270" y1="310" x2="445" y2="310" stroke="#bc8cff" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="300" y="304" fill="#bc8cff" font-size="8" font-family="monospace">PTT btn → GPIO21</text>
+
+  <!-- Spare → GPIO22 -->
+  <line x1="140" y1="571" x2="290" y2="571" stroke="#bc8cff" stroke-width="1.2"/>
+  <line x1="290" y1="571" x2="290" y2="340" stroke="#bc8cff" stroke-width="1.2"/>
+  <line x1="290" y1="340" x2="445" y2="340" stroke="#bc8cff" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="300" y="334" fill="#bc8cff" font-size="8" font-family="monospace">Spare → GPIO22</text>
+
+  <!-- ============ NOTES SECTION ============ -->
+  <rect x="30" y="640" width="860" height="120" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <text x="50" y="665" fill="#58a6ff" font-size="11" font-family="monospace" font-weight="bold">CIRCUIT NOTES</text>
+
+  <text x="50" y="688" fill="#c9d1d9" font-size="9" font-family="monospace">• TVS diode + 100μF cap: protects ESP32 from ignition/alternator voltage spikes</text>
+  <text x="50" y="705" fill="#c9d1d9" font-size="9" font-family="monospace">• PC817 optocoupler: galvanic isolation between car's 12V brake circuit and ESP32 3.3V logic</text>
+  <text x="50" y="722" fill="#c9d1d9" font-size="9" font-family="monospace">• All button GPIOs use internal pull-ups (INPUT_PULLUP) — button press = LOW</text>
+  <text x="50" y="739" fill="#c9d1d9" font-size="9" font-family="monospace">• Servo powered direct from 12V through 5A fuse (NOT through buck converter)</text>
+  <text x="50" y="756" fill="#c9d1d9" font-size="9" font-family="monospace">• ESP32 and servo MUST share common ground</text>
+
+  <!-- ============ SIGNAL FLOW LEGEND ============ -->
+  <rect x="640" y="440" width="250" height="170" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <text x="660" y="465" fill="#58a6ff" font-size="11" font-family="monospace" font-weight="bold">SIGNAL LEGEND</text>
+
+  <line x1="660" y1="485" x2="700" y2="485" stroke="#f85149" stroke-width="1.5"/>
+  <text x="710" y="489" fill="#c9d1d9" font-size="9" font-family="monospace">12V power / brake</text>
+
+  <line x1="660" y1="505" x2="700" y2="505" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="710" y="509" fill="#c9d1d9" font-size="9" font-family="monospace">5V regulated power</text>
+
+  <line x1="660" y1="525" x2="700" y2="525" stroke="#d29922" stroke-width="1.5"/>
+  <text x="710" y="529" fill="#c9d1d9" font-size="9" font-family="monospace">3.3V / passive components</text>
+
+  <line x1="660" y1="545" x2="700" y2="545" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="710" y="549" fill="#c9d1d9" font-size="9" font-family="monospace">Button signal lines</text>
+
+  <line x1="660" y1="565" x2="700" y2="565" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="710" y="569" fill="#c9d1d9" font-size="9" font-family="monospace">Servo PWM output</text>
+
+  <line x1="660" y1="585" x2="700" y2="585" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="710" y="589" fill="#c9d1d9" font-size="9" font-family="monospace">Brake in / PTT out</text>
+
+  <!-- Steering wheel side note -->
+  <rect x="200" y="450" width="220" height="70" rx="5" fill="#0d1117" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="310" y="472" text-anchor="middle" fill="#484f58" font-size="9" font-family="monospace">STEERING WHEEL SIDE</text>
+  <text x="310" y="490" text-anchor="middle" fill="#484f58" font-size="8" font-family="monospace">Each button: one terminal → signal pin</text>
+  <text x="310" y="504" text-anchor="middle" fill="#484f58" font-size="8" font-family="monospace">other terminal → daisy-chained GND</text>
+</svg>
+
+<div class="pin-table">
+  <h2>ESP32 GPIO Assignments</h2>
+  <table>
+    <tr><th>GPIO</th><th>Direction</th><th>Function</th><th>Config</th></tr>
+    <tr><td>5V pin</td><td>Input</td><td>Power from LM2596 buck converter</td><td>—</td></tr>
+    <tr><td>GND</td><td>—</td><td>Common ground bus (shared with servo)</td><td>—</td></tr>
+    <tr><td>3V3</td><td>Output</td><td>3.3V rail for optocoupler pull-up</td><td>—</td></tr>
+    <tr><td>GPIO18</td><td>Output</td><td>Servo signal (PWM 50Hz, 1000–2000μs)</td><td>PWM output</td></tr>
+    <tr><td>GPIO19</td><td>Input</td><td>Brake pedal (via PC817 optocoupler)</td><td>INPUT_PULLUP</td></tr>
+    <tr><td>GPIO20</td><td>Input</td><td>DRS button (from XLR5 pin 2)</td><td>INPUT_PULLUP</td></tr>
+    <tr><td>GPIO21</td><td>Input</td><td>PTT button (from XLR5 pin 3)</td><td>INPUT_PULLUP</td></tr>
+    <tr><td>GPIO22</td><td>Input</td><td>Spare button (from XLR5 pin 4)</td><td>INPUT_PULLUP</td></tr>
+    <tr><td>GPIO23</td><td>Output</td><td>PTT transistor trigger (via 1kΩ → 2N2222)</td><td>OUTPUT</td></tr>
+  </table>
+</div>
+
+<div class="parts-list">
+  <h2>Bill of Materials</h2>
+  <table>
+    <tr><th>Component</th><th>Value / Part</th><th>Purpose</th><th>~Cost</th></tr>
+    <tr><td>ESP32 dev board</td><td>ESP32-WROOM-32</td><td>Main controller</td><td>$10</td></tr>
+    <tr><td>Buck converter</td><td>LM2596 module</td><td>12V → 5V for ESP32</td><td>$5</td></tr>
+    <tr><td>TVS diode</td><td>P6KE15A</td><td>Voltage spike protection</td><td>$1</td></tr>
+    <tr><td>Electrolytic cap</td><td>100μF / 25V</td><td>Input voltage filtering</td><td>$0.50</td></tr>
+    <tr><td>Optocoupler</td><td>PC817</td><td>Brake signal isolation (12V → 3.3V)</td><td>$1</td></tr>
+    <tr><td>NPN transistor</td><td>2N2222</td><td>PTT radio switching</td><td>$0.50</td></tr>
+    <tr><td>Resistor</td><td>1kΩ (×2)</td><td>Optocoupler LED limit + transistor base</td><td>$0.20</td></tr>
+    <tr><td>Resistor</td><td>10kΩ (×1)</td><td>Optocoupler output pull-up</td><td>$0.10</td></tr>
+    <tr><td>Blade fuse + holder</td><td>5A</td><td>Servo power protection</td><td>$3</td></tr>
+    <tr><td>XLR5 connector</td><td>Panel mount female</td><td>Steering wheel button interface</td><td>$8</td></tr>
+    <tr><td>Deutsch DT connector</td><td>DT06-6S / DT04-6P</td><td>Quick disconnect (wheel cable)</td><td>$12</td></tr>
+    <tr><td>RC servo</td><td>Standard size</td><td>DRS wing flap actuator</td><td>$12</td></tr>
+    <tr><td>Momentary buttons</td><td>16mm panel mount (×3-4)</td><td>Steering wheel controls</td><td>$6</td></tr>
+    <tr><td>Perfboard</td><td>—</td><td>Circuit assembly</td><td>$3</td></tr>
+  </table>
+</div>
+
+</body>
+</html>
