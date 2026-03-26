@@ -11,7 +11,7 @@ import time
 from machine import WDT
 
 from config import PINS, DRS as DRS_CONFIG, PTT as PTT_CONFIG, DEBOUNCE, WATCHDOG, LOOP
-from hw import GPIOController, Servo
+from hw import GPIOController, Servo, ServoActuator, PneumaticActuator
 from drs import DRS
 from ptt import PTT
 
@@ -24,17 +24,36 @@ def main():
     # --- Hardware init (config flows DOWN, never imported sideways) ---
     gpio = GPIOController(PINS)
 
-    servo = Servo(
-        pin=PINS["SERVO_PWM"],
-        min_pulse_us=DRS_CONFIG["servo_min_pulse_us"],
-        max_pulse_us=DRS_CONFIG["servo_max_pulse_us"],
-        freq_hz=DRS_CONFIG["servo_freq_hz"],
-        min_angle=DRS_CONFIG["closed_angle"],
-        max_angle=DRS_CONFIG["open_angle"],
-    )
+    # --- DRS actuator (servo or pneumatic, selected by config) ---
+    actuator_type = DRS_CONFIG["actuator_type"]
+
+    if actuator_type == "servo":
+        servo = Servo(
+            pin=PINS["SERVO_PWM"],
+            min_pulse_us=DRS_CONFIG["servo_min_pulse_us"],
+            max_pulse_us=DRS_CONFIG["servo_max_pulse_us"],
+            freq_hz=DRS_CONFIG["servo_freq_hz"],
+            min_angle=DRS_CONFIG["closed_angle"],
+            max_angle=DRS_CONFIG["open_angle"],
+        )
+        actuator = ServoActuator(
+            servo=servo,
+            open_angle=DRS_CONFIG["open_angle"],
+            closed_angle=DRS_CONFIG["closed_angle"],
+            transition_ms=DRS_CONFIG["transition_time_ms"],
+        )
+    elif actuator_type == "pneumatic":
+        actuator = PneumaticActuator(
+            gpio=gpio,
+            solenoid_pin_name="DRS_SOLENOID_OUT",
+        )
+    else:
+        raise ValueError("Unknown actuator_type: {}".format(actuator_type))
+
+    print("DRS actuator: {}".format(actuator_type))
 
     # --- Module init (each gets only the config it needs) ---
-    drs = DRS(gpio, servo, DRS_CONFIG, DEBOUNCE)
+    drs = DRS(gpio, actuator, DEBOUNCE)
     ptt = PTT(gpio, PTT_CONFIG, DEBOUNCE)
 
     print("Hardware initialized. DRS={}, PTT=ready".format(drs.get_state()))

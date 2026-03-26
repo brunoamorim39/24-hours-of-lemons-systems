@@ -6,7 +6,7 @@ DRS wing control + push-to-talk radio for our 24 Hours of Lemons E46 325Ci. ESP3
 
 | Capability | Status | Details |
 |-----------|--------|---------|
-| DRS servo control | Working | Direct GPIO PWM, 50Hz, smooth transitions |
+| DRS actuator control | Working | Servo (PWM) or pneumatic (solenoid), config toggle |
 | Brake safety interlock | Working | Optocoupler-isolated, immediate DRS close |
 | PTT radio control | Working | Button keys Baofeng via 2N2222 transistor |
 | PTT hold timeout | Working | 30s max transmit, auto-release safety |
@@ -22,7 +22,7 @@ DRS wing control + push-to-talk radio for our 24 Hours of Lemons E46 325Ci. ESP3
 
 - **Brake override** — always closes DRS, highest priority
 - **Default closed** — DRS starts closed, shuts down closed, faults to closed
-- **Servo angle limits** — out-of-range rejected before hardware write
+- **Actuator abstraction** — servo angle limits enforced; pneumatic uses spring-return fail-safe
 - **Hardware watchdog** — ESP32 resets if main loop stalls (10s timeout)
 - **PTT timeout** — auto-release after 30s continuous transmit
 
@@ -61,7 +61,8 @@ make esp32-monitor PORT=/dev/tty.usbserial-0001
 #   ========================================
 #   Lemons DRS+PTT — E46 325Ci
 #   ========================================
-#   DRS: IDLE (0deg)
+#   DRS actuator: servo
+#   DRS: IDLE
 #   Hardware initialized. DRS=idle, PTT=ready
 ```
 
@@ -86,20 +87,27 @@ Run these on the bench before installing in the car. Open serial monitor (`make 
 - If you see repeated resets, check for import errors in serial output
 
 **2. DRS Button Test**
-- Wire momentary button between GPIO20 and GND
-- Press → `DRS: ACTIVE (90deg)`
-- Press again → `DRS: IDLE (0deg)`
+- Wire momentary button between GPIO4 and GND
+- Press → `DRS: ACTIVE`
+- Press again → `DRS: IDLE`
 
 **3. Brake Safety Interlock**
 - Activate DRS (press button)
 - Short GPIO19 to GND (simulates optocoupler brake signal)
 - Serial immediately shows `DRS: brake pressed — closing`
 
-**4. Servo Test**
+**4. Servo Actuator Test** (when `actuator_type` is `"servo"`)
 - Connect servo: signal to GPIO18, power to 12V (via fuse), share GND with ESP32
 - Press DRS button → servo moves to open angle
 - Press again → servo returns to closed angle
 - Adjust angles in `firmware/config.py` if needed
+
+**4b. Pneumatic Actuator Test** (when `actuator_type` is `"pneumatic"`)
+- Measure GPIO25 with multimeter (should read 0V at boot)
+- Press DRS button → GPIO25 reads 3.3V (solenoid energized)
+- Press again → GPIO25 drops to 0V (solenoid de-energized)
+- With cylinder connected: verify flap opens/closes with button
+- Brake interlock: activate DRS, short GPIO19 to GND → GPIO25 drops immediately
 
 **5. PTT Test**
 - Wire button between GPIO21 and GND
@@ -122,16 +130,14 @@ Run these on the bench before installing in the car. Open serial monitor (`make 
 
 ## Configuration
 
-All tunables live in `firmware/config.py` — the single source of truth:
+All tunables live in `firmware/config.py` — the single source of truth.
+
+**Switching DRS actuator type:**
 
 ```python
-PINS = {
-    "SERVO_PWM": 18,       # PWM output to servo
-    "BRAKE_SWITCH": 19,    # Optocoupler output
-    "DRS_BTN": 20,         # XLR5 pin 2
-    "PTT_BTN": 21,         # XLR5 pin 3
-    "SPARE_BTN": 22,       # XLR5 pin 4
-    "PTT_OUT": 23,         # Transistor base drive
+DRS = {
+    "actuator_type": "servo",      # change to "pneumatic" for solenoid valve
+    # ... servo tuning keys below are ignored when actuator_type is "pneumatic"
 }
 ```
 
@@ -168,7 +174,8 @@ Open [docs/e46-circuit.html](docs/e46-circuit.html) in a browser for the full wi
 │   ├── ptt.py                  # PTT radio control
 │   └── hw/                     # Hardware abstraction
 │       ├── gpio.py             # Debounced GPIO with callbacks
-│       └── servo.py            # PWM servo with angle limits
+│       ├── servo.py            # PWM servo with angle limits
+│       └── actuator.py         # ServoActuator + PneumaticActuator wrappers
 ├── docs/
 │   └── e46-circuit.html        # Circuit diagram + BOM
 ├── Makefile                    # ESP32 flash/upload/monitor commands

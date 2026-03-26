@@ -11,22 +11,24 @@ injection. No other module imports from this file.
 # --- Pin Assignments (ESP32 GPIO numbers) ---
 # Change these when rewiring. No other file contains pin numbers.
 PINS = {
-    "SERVO_PWM": 18,       # PWM output to servo signal wire
-    "BRAKE_SWITCH": 19,    # PC817 optocoupler output (active-low)
-    "DRS_BTN": 4,          # XLR5 pin 2, momentary (active-low)
-    "PTT_BTN": 21,         # XLR5 pin 3, momentary (active-low)
-    "SPARE_BTN": 22,       # XLR5 pin 4, momentary (active-low)
-    "PTT_OUT": 23,         # 1kΩ → 2N2222 base → Baofeng PTT
+    "SERVO_PWM": 18,           # PWM output to servo signal wire
+    "DRS_SOLENOID_OUT": 25,    # GPIO for solenoid valve relay (pneumatic DRS)
+    "BRAKE_SWITCH": 19,        # PC817 optocoupler output (active-low)
+    "DRS_BTN": 4,              # XLR5 pin 2, momentary (active-low)
+    "PTT_BTN": 21,             # XLR5 pin 3, momentary (active-low)
+    "SPARE_BTN": 22,           # XLR5 pin 4, momentary (active-low)
+    "PTT_OUT": 23,             # 1kΩ → 2N2222 base → Baofeng PTT
 }
 
-# --- DRS Servo Tuning ---
+# --- DRS Actuator ---
 DRS = {
-    "open_angle": 90,              # degrees — wing open position
-    "closed_angle": 0,             # degrees — wing closed position
-    "transition_time_ms": 500,     # ms — smooth transition duration
-    "servo_min_pulse_us": 1000,    # μs — pulse width at 0°
-    "servo_max_pulse_us": 2000,    # μs — pulse width at 180°
-    "servo_freq_hz": 50,           # Hz — standard servo PWM frequency
+    "actuator_type": "servo",      # "servo" or "pneumatic"
+    "open_angle": 90,              # degrees — wing open position (servo only)
+    "closed_angle": 0,             # degrees — wing closed position (servo only)
+    "transition_time_ms": 500,     # ms — smooth transition duration (servo only)
+    "servo_min_pulse_us": 1000,    # μs — pulse width at 0° (servo only)
+    "servo_max_pulse_us": 2000,    # μs — pulse width at 180° (servo only)
+    "servo_freq_hz": 50,           # Hz — standard servo PWM frequency (servo only)
 }
 
 # --- Input Debounce ---

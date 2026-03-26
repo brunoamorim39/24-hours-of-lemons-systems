@@ -4,7 +4,7 @@ DRS (Drag Reduction System) state machine.
 States: IDLE → ACTIVE → IDLE, with FAULT for hardware errors.
 Brake safety interlock: any brake press while ACTIVE forces immediate close.
 
-This module receives its dependencies (gpio, servo, config) via constructor
+This module receives its dependencies (gpio, actuator, config) via constructor
 injection. It does NOT import config.py.
 """
 
@@ -18,21 +18,17 @@ FAULT = "fault"
 class DRS:
     """DRS controller with state machine and brake safety interlock."""
 
-    def __init__(self, gpio, servo, drs_config, debounce_config):
+    def __init__(self, gpio, actuator, debounce_config):
         """
         Initialize DRS controller.
 
         Args:
             gpio: GPIOController instance (shared, from main.py).
-            servo: Servo instance (owned by DRS).
-            drs_config: Dict with open_angle, closed_angle, transition_time_ms.
+            actuator: Actuator instance with open()/close()/disable() interface.
             debounce_config: Dict with button_ms, brake_ms.
         """
         self._gpio = gpio
-        self._servo = servo
-        self._open_angle = drs_config["open_angle"]
-        self._closed_angle = drs_config["closed_angle"]
-        self._transition_ms = drs_config["transition_time_ms"]
+        self._actuator = actuator
         self._btn_debounce = debounce_config["button_ms"]
         self._brake_debounce = debounce_config["brake_ms"]
 
@@ -42,11 +38,11 @@ class DRS:
         gpio.register_callback("DRS_BTN", self._on_button)
         gpio.register_callback("BRAKE_SWITCH", self._on_brake)
 
-        # Safety: ensure servo starts closed
+        # Safety: ensure actuator starts closed
         try:
-            self._servo.set_angle(self._closed_angle)
+            self._actuator.close()
         except Exception as e:
-            print("DRS: failed to close servo on init: {}".format(e))
+            print("DRS: failed to close actuator on init: {}".format(e))
             self.state = FAULT
 
     def poll(self):
@@ -90,9 +86,9 @@ class DRS:
     def _open(self):
         """Open wing (IDLE → ACTIVE)."""
         try:
-            self._servo.set_angle(self._open_angle, self._transition_ms)
+            self._actuator.open()
             self.state = ACTIVE
-            print("DRS: ACTIVE ({}deg)".format(self._open_angle))
+            print("DRS: ACTIVE")
         except Exception as e:
             print("DRS: open failed: {}".format(e))
             self.state = FAULT
@@ -101,12 +97,12 @@ class DRS:
         """Close wing (any state → IDLE, or stay FAULT on error)."""
         was_fault = self.state == FAULT
         try:
-            self._servo.set_angle(self._closed_angle, self._transition_ms)
+            self._actuator.close()
             self.state = IDLE
             if was_fault:
                 print("DRS: recovered from FAULT → IDLE")
             else:
-                print("DRS: IDLE ({}deg)".format(self._closed_angle))
+                print("DRS: IDLE")
         except Exception as e:
             print("DRS: close failed: {}".format(e))
             self.state = FAULT

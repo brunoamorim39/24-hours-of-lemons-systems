@@ -11,7 +11,8 @@
 - [ ] DRS button test: press → wing opens, press → wing closes
 - [ ] Brake interlock test: activate DRS → press brake → wing closes
 - [ ] PTT test: hold button → radio keys, release → radio unkeys
-- [ ] Servo power: 12V through fuse, common ground with ESP32
+- [ ] Actuator power: 12V through fuse, common ground with ESP32
+- [ ] Verify actuator type in serial: `DRS actuator: servo` or `DRS actuator: pneumatic`
 
 ---
 
@@ -46,8 +47,8 @@ Look for error messages. Common issues:
 
 1. Check ESP32 power (USB or 5V from buck converter)
 2. Check serial output: `make esp32-monitor`
-3. Check servo power (12V through fuse)
-4. Check GPIO20 button wiring (should short to GND)
+3. Check actuator power (12V through fuse)
+4. Check GPIO4 button wiring (should short to GND)
 5. Re-upload firmware if needed
 
 ### PTT Not Working
@@ -57,11 +58,18 @@ Look for error messages. Common issues:
 3. Check Baofeng radio power and connection
 4. Check serial output for PTT messages
 
-### Servo Jitters or No Movement
+### Servo Jitters or No Movement (servo mode)
 
 1. Check common ground between ESP32 and servo
 2. Check 12V supply to servo (through 5A fuse)
 3. Check GPIO18 signal wire to servo
+
+### Solenoid Not Firing (pneumatic mode)
+
+1. Check GPIO25 output with multimeter (3.3V when DRS active)
+2. Check relay/MOSFET wiring from GPIO25 to solenoid valve
+3. Check 12V supply to solenoid valve
+4. Check air pressure (compressor running, tank not empty)
 
 ---
 
@@ -86,7 +94,8 @@ Open `docs/e46-circuit.html` in any browser for full wiring reference.
 ```
 ESP32 Serial Port: _______________________
 
-DRS Open Angle: _______ Closed Angle: _______
+DRS Actuator Type: ______ (servo / pneumatic)
+DRS Open Angle: _______ Closed Angle: _______ (servo only)
 
 Issues Encountered: _______________________
 _______________________________________
