@@ -11,7 +11,13 @@ need to know which type is behind the interface.
 
 
 class ServoActuator:
-    """Actuator backed by a PWM servo motor."""
+    """Actuator backed by a PWM servo motor.
+
+    Holds PWM continuously in both open and closed positions. The SV12T
+    (and digital servos generally) will not release torque via signal
+    manipulation — they treat signal loss as 'hold last position.'
+    True release requires cutting 12V power via external switching.
+    """
 
     def __init__(self, servo, open_angle, closed_angle, transition_ms):
         """
@@ -35,7 +41,7 @@ class ServoActuator:
         self._servo.set_angle(self._closed_angle, self._transition_ms)
 
     def disable(self):
-        """Stop PWM signal (servo goes limp)."""
+        """Stop PWM signal (shutdown only — servo may still hold position)."""
         self._servo.disable()
 
 

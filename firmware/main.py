@@ -33,8 +33,8 @@ def main():
             min_pulse_us=DRS_CONFIG["servo_min_pulse_us"],
             max_pulse_us=DRS_CONFIG["servo_max_pulse_us"],
             freq_hz=DRS_CONFIG["servo_freq_hz"],
-            min_angle=DRS_CONFIG["closed_angle"],
-            max_angle=DRS_CONFIG["open_angle"],
+            min_angle=DRS_CONFIG["servo_min_angle"],
+            max_angle=DRS_CONFIG["servo_max_angle"],
         )
         actuator = ServoActuator(
             servo=servo,
@@ -53,7 +53,7 @@ def main():
     print("DRS actuator: {}".format(actuator_type))
 
     # --- Module init (each gets only the config it needs) ---
-    drs = DRS(gpio, actuator, DEBOUNCE)
+    drs = DRS(gpio, actuator, DEBOUNCE, DRS_CONFIG["max_active_ms"])
     ptt = PTT(gpio, PTT_CONFIG, DEBOUNCE)
 
     print("Hardware initialized. DRS={}, PTT=ready".format(drs.get_state()))

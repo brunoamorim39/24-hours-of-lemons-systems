@@ -66,6 +66,10 @@ class Servo:
                 )
             )
 
+        start_ticks = time.ticks_ms()
+        print("SERVO: {}deg -> {}deg over {}ms".format(
+            self._current_angle, angle, transition_time_ms))
+
         if transition_time_ms > 0 and self._current_angle is not None:
             steps = max(1, transition_time_ms // _STEP_MS)
             start = self._current_angle
@@ -78,20 +82,26 @@ class Servo:
 
         self._write_duty(angle)
         self._current_angle = angle
+        elapsed = time.ticks_diff(time.ticks_ms(), start_ticks)
+        print("SERVO: arrived {}deg  pulse={}us  took={}ms".format(
+            angle, self._angle_to_pulse(angle), elapsed))
 
     def get_angle(self):
         """Return current angle in degrees, or None if never set."""
         return self._current_angle
 
     def disable(self):
-        """Stop sending PWM signal (servo goes limp)."""
+        """Stop sending PWM signal (servo may still hold on digital servos)."""
         self._pwm.duty_u16(0)
+
+    def _angle_to_pulse(self, angle):
+        """Convert angle to pulse width in μs."""
+        angle_range = self._max_angle - self._min_angle
+        pulse_range = self._max_pulse_us - self._min_pulse_us
+        return self._min_pulse_us + (angle - self._min_angle) * pulse_range // angle_range
 
     def _write_duty(self, angle):
         """Convert angle to duty cycle and write to PWM hardware."""
-        # All integer math: angle → pulse_us → duty_u16
-        angle_range = self._max_angle - self._min_angle
-        pulse_range = self._max_pulse_us - self._min_pulse_us
-        pulse_us = self._min_pulse_us + (angle - self._min_angle) * pulse_range // angle_range
+        pulse_us = self._angle_to_pulse(angle)
         duty = pulse_us * 65535 // self._period_us
         self._pwm.duty_u16(duty)

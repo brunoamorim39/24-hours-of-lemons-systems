@@ -23,12 +23,15 @@ PINS = {
 # --- DRS Actuator ---
 DRS = {
     "actuator_type": "servo",      # "servo" or "pneumatic"
-    "open_angle": 90,              # degrees — wing open position (servo only)
-    "closed_angle": 0,             # degrees — wing closed position (servo only)
+    "open_angle": 90,              # degrees — wing open position (operational setpoint)
+    "closed_angle": 0,             # degrees — wing closed position (operational setpoint)
+    "servo_min_angle": 0,          # degrees — servo mechanical min (maps to min_pulse)
+    "servo_max_angle": 120,        # degrees — servo mechanical max (maps to max_pulse)
     "transition_time_ms": 500,     # ms — smooth transition duration (servo only)
-    "servo_min_pulse_us": 1000,    # μs — pulse width at 0° (servo only)
-    "servo_max_pulse_us": 2000,    # μs — pulse width at 180° (servo only)
-    "servo_freq_hz": 50,           # Hz — standard servo PWM frequency (servo only)
+    "servo_min_pulse_us": 900,     # μs — pulse width at servo_min_angle (servo only)
+    "servo_max_pulse_us": 2100,    # μs — pulse width at servo_max_angle (servo only)
+    "servo_freq_hz": 333,          # Hz — SV12T native update rate (servo only)
+    "max_active_ms": 15000,        # ms — auto-close DRS after this long open (thermal safety)
 }
 
 # --- Input Debounce ---
