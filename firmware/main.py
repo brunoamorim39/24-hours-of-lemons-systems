@@ -10,8 +10,16 @@ No application logic lives here — just init, wire, loop, shutdown.
 import time
 from machine import WDT
 
-from config import PINS, DRS as DRS_CONFIG, PTT as PTT_CONFIG, DEBOUNCE, WATCHDOG, LOOP
-from hw import GPIOController, Servo, ServoActuator, PneumaticActuator
+from config import (
+    PINS,
+    DRS as DRS_CONFIG,
+    PTT as PTT_CONFIG,
+    DEBOUNCE,
+    WATCHDOG,
+    LOOP,
+    LED as LED_CONFIG,
+)
+from hw import GPIOController, Servo, ServoActuator, PneumaticActuator, Led
 from drs import DRS
 from ptt import PTT
 
@@ -23,6 +31,10 @@ def main():
 
     # --- Hardware init (config flows DOWN, never imported sideways) ---
     gpio = GPIOController(PINS)
+
+    # --- Status LED (boot flash proves firmware is alive before anything else) ---
+    led = Led(gpio, "DRS_LED_OUT")
+    led.flash(LED_CONFIG["boot_flash_count"], LED_CONFIG["boot_flash_ms"])
 
     # --- DRS actuator (servo or pneumatic, selected by config) ---
     actuator_type = DRS_CONFIG["actuator_type"]
@@ -53,7 +65,7 @@ def main():
     print("DRS actuator: {}".format(actuator_type))
 
     # --- Module init (each gets only the config it needs) ---
-    drs = DRS(gpio, actuator, DEBOUNCE, DRS_CONFIG["max_active_ms"])
+    drs = DRS(gpio, actuator, DEBOUNCE, led, LED_CONFIG["fault_blink_ms"])
     ptt = PTT(gpio, PTT_CONFIG, DEBOUNCE)
 
     print("Hardware initialized. DRS={}, PTT=ready".format(drs.get_state()))

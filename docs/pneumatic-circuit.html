@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    font-size: 20px;
+    color: #58a6ff;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 20px;
+  }
+  svg {
+    max-width: 1200px;
+    width: 100%;
+  }
+  .parts-list, .notes-list {
+    max-width: 1200px;
+    width: 100%;
+    margin-top: 28px;
+    border-top: 1px solid #21262d;
+    padding-top: 20px;
+  }
+  .parts-list h2, .notes-list h2 {
+    font-size: 14px;
+    color: #58a6ff;
+    margin-bottom: 12px;
+  }
+  .parts-list table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .parts-list th {
+    text-align: left;
+    color: #8b949e;
+    padding: 6px 10px;
+    border-bottom: 1px solid #21262d;
+    font-weight: 500;
+  }
+  .parts-list td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #161b22;
+    color: #c9d1d9;
+  }
+  .parts-list td:first-child { color: #79c0ff; }
+  .notes-list ul {
+    list-style: none;
+    padding: 0;
+  }
+  .notes-list li {
+    font-size: 12px;
+    color: #c9d1d9;
+    padding: 5px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+  .notes-list li::before {
+    content: "•";
+    color: #58a6ff;
+    position: absolute;
+    left: 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Lemons DRS — Pneumatic Circuit (double-acting)</h1>
+<div class="subtitle">24 Hours of Lemons / E46 325Ci — Air plumbing (electrical shown separately in e46-circuit.html)</div>
+
+<svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-air" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#39d0d8" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="arr-vent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="700" fill="#0d1117" rx="8"/>
+
+  <text x="30" y="40" fill="#58a6ff" font-size="13" font-family="monospace" font-weight="bold">AIR FLOW — supply in cyan, exhaust in gray dashed</text>
+  <line x1="30" y1="48" x2="600" y2="48" stroke="#21262d" stroke-width="1"/>
+
+  <!-- ==================================================== -->
+  <!-- 1. Viair 10000 kit (compressor + tank)               -->
+  <!-- ==================================================== -->
+  <rect x="40" y="80" width="220" height="160" rx="8" fill="#161b22" stroke="#39d0d8" stroke-width="2"/>
+  <text x="150" y="108" text-anchor="middle" fill="#39d0d8" font-size="12" font-family="monospace" font-weight="bold">Viair 10000 Kit</text>
+  <text x="150" y="124" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">compressor + tank + pressure sw</text>
+  <text x="150" y="144" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">cut-in ~110 PSI</text>
+  <text x="150" y="158" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">cut-out ~150 PSI</text>
+
+  <!-- Tank pressure gauge -->
+  <circle cx="200" cy="196" r="14" fill="#0d1117" stroke="#e3b341" stroke-width="1.5"/>
+  <line x1="200" y1="196" x2="208" y2="188" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="200" y="225" text-anchor="middle" fill="#e3b341" font-size="8" font-family="monospace">tank gauge</text>
+
+  <!-- Drain petcock (bottom of tank, manual) -->
+  <line x1="100" y1="240" x2="100" y2="265" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-vent)"/>
+  <text x="105" y="282" fill="#8b949e" font-size="8" font-family="monospace">tank drain petcock</text>
+  <text x="105" y="293" fill="#484f58" font-size="7" font-family="monospace">(factory, manual twist at shutdown)</text>
+
+  <!-- Output line from tank → regulator -->
+  <line x1="260" y1="150" x2="330" y2="150" stroke="#39d0d8" stroke-width="2" marker-end="url(#arr-air)"/>
+
+  <!-- ==================================================== -->
+  <!-- 2. Pressure Regulator                                 -->
+  <!-- ==================================================== -->
+  <rect x="340" y="115" width="150" height="70" rx="5" fill="#161b22" stroke="#39d0d8" stroke-width="1.5"/>
+  <text x="415" y="140" text-anchor="middle" fill="#39d0d8" font-size="11" font-family="monospace" font-weight="bold">Regulator</text>
+  <text x="415" y="158" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">0–125 PSI, 1/4" NPT</text>
+
+  <!-- Regulator gauge -->
+  <circle cx="475" cy="130" r="10" fill="#0d1117" stroke="#e3b341" stroke-width="1.2"/>
+  <line x1="475" y1="130" x2="481" y2="124" stroke="#e3b341" stroke-width="1.2"/>
+  <text x="475" y="108" text-anchor="middle" fill="#e3b341" font-size="8" font-family="monospace">reg gauge</text>
+
+  <text x="415" y="178" text-anchor="middle" fill="#484f58" font-size="8" font-family="monospace">adjust ↻</text>
+
+  <!-- Regulator → valve P port -->
+  <line x1="490" y1="150" x2="560" y2="150" stroke="#39d0d8" stroke-width="2" marker-end="url(#arr-air)"/>
+
+  <!-- ==================================================== -->
+  <!-- 3. AirTAC 4V210-08 — 5/2 single-solenoid valve        -->
+  <!-- Ports: 1=P supply, 2=A out, 4=B out, 3=EA exhaust,    -->
+  <!--        5=EB exhaust. Coil-energized: P→A, B→EB.       -->
+  <!--        Coil-de-energized: P→B, A→EA.                  -->
+  <!-- ==================================================== -->
+  <rect x="570" y="85" width="180" height="170" rx="6" fill="#161b22" stroke="#39d0d8" stroke-width="2"/>
+  <text x="660" y="110" text-anchor="middle" fill="#39d0d8" font-size="12" font-family="monospace" font-weight="bold">AirTAC 4V210-08</text>
+  <text x="660" y="126" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">5/2 single-solenoid valve</text>
+  <text x="660" y="140" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">spring-return spool, 12V coil</text>
+
+  <!-- Port labels on the valve -->
+  <text x="578" y="160" fill="#39d0d8" font-size="9" font-family="monospace" font-weight="bold">1 (P)</text>
+  <text x="578" y="173" fill="#484f58" font-size="7" font-family="monospace">supply in</text>
+
+  <text x="742" y="160" text-anchor="end" fill="#39d0d8" font-size="9" font-family="monospace" font-weight="bold">2 (A)</text>
+  <text x="742" y="173" text-anchor="end" fill="#484f58" font-size="7" font-family="monospace">→ cap end</text>
+
+  <text x="742" y="215" text-anchor="end" fill="#39d0d8" font-size="9" font-family="monospace" font-weight="bold">4 (B)</text>
+  <text x="742" y="228" text-anchor="end" fill="#484f58" font-size="7" font-family="monospace">→ rod end</text>
+
+  <text x="606" y="248" fill="#8b949e" font-size="9" font-family="monospace" font-weight="bold">3 (EA)</text>
+  <text x="700" y="248" fill="#8b949e" font-size="9" font-family="monospace" font-weight="bold">5 (EB)</text>
+
+  <text x="660" y="178" text-anchor="middle" fill="#484f58" font-size="7" font-family="monospace">energized: P→A, B→EB (extend)</text>
+  <text x="660" y="192" text-anchor="middle" fill="#484f58" font-size="7" font-family="monospace">default: P→B, A→EA (retract)</text>
+
+  <!-- EA and EB exhaust to atmosphere (downward) -->
+  <line x1="620" y1="255" x2="620" y2="295" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-vent)"/>
+  <text x="590" y="305" fill="#8b949e" font-size="8" font-family="monospace">→ atm (EA)</text>
+
+  <line x1="710" y1="255" x2="710" y2="295" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-vent)"/>
+  <text x="720" y="305" fill="#8b949e" font-size="8" font-family="monospace">→ atm (EB)</text>
+
+  <!-- Coil indicator (electrical hint, dashed purple) -->
+  <text x="660" y="75" text-anchor="middle" fill="#bc8cff" font-size="8" font-family="monospace">↑ 12V coil driven by ESP32 GPIO25</text>
+
+  <!-- ==================================================== -->
+  <!-- 4. Double-acting cylinder (MAL40x50)                  -->
+  <!-- Two supply lines: A port → cap end (extend),          -->
+  <!--                   B port → rod end (retract).         -->
+  <!-- ==================================================== -->
+
+  <!-- Cylinder body -->
+  <rect x="920" y="130" width="220" height="100" rx="6" fill="#161b22" stroke="#f0883e" stroke-width="2"/>
+  <text x="1030" y="158" text-anchor="middle" fill="#f0883e" font-size="12" font-family="monospace" font-weight="bold">MAL40×50 Cylinder</text>
+  <text x="1030" y="174" text-anchor="middle" fill="#8b949e" font-size="9" font-family="monospace">double-acting, 40mm bore × 50mm stroke</text>
+
+  <!-- Cap-end port (left side of cylinder) -->
+  <line x1="920" y1="150" x2="900" y2="150" stroke="#39d0d8" stroke-width="2"/>
+  <text x="898" y="146" text-anchor="end" fill="#39d0d8" font-size="9" font-family="monospace" font-weight="bold">cap</text>
+
+  <!-- Rod-end port (right side of cylinder) -->
+  <line x1="1140" y1="210" x2="1160" y2="210" stroke="#39d0d8" stroke-width="2"/>
+  <text x="1162" y="214" fill="#39d0d8" font-size="9" font-family="monospace" font-weight="bold">rod</text>
+
+  <!-- Internal piston + rod hint -->
+  <line x1="1040" y1="170" x2="1040" y2="220" stroke="#8b949e" stroke-width="2"/>
+  <line x1="1040" y1="195" x2="1130" y2="195" stroke="#8b949e" stroke-width="2"/>
+  <text x="1030" y="246" text-anchor="middle" fill="#484f58" font-size="8" font-family="monospace">piston ↑↓ with which port is pressurized</text>
+  <text x="1030" y="258" text-anchor="middle" fill="#f0883e" font-size="9" font-family="monospace">rod → DRS flap linkage →</text>
+
+  <!-- ==================================================== -->
+  <!-- Routing: A port (2) → cap end of cylinder             -->
+  <!-- Route over the top, around the cylinder, into cap     -->
+  <!-- ==================================================== -->
+  <line x1="750" y1="150" x2="820" y2="150" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="820" y1="150" x2="820" y2="100" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="820" y1="100" x2="870" y2="100" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="870" y1="100" x2="870" y2="150" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="870" y1="150" x2="900" y2="150" stroke="#39d0d8" stroke-width="2" marker-end="url(#arr-air)"/>
+  <text x="845" y="92" text-anchor="middle" fill="#39d0d8" font-size="8" font-family="monospace">A → cap end (extend)</text>
+
+  <!-- ==================================================== -->
+  <!-- Routing: B port (4) → rod end of cylinder             -->
+  <!-- Route under the cylinder, up and into rod end         -->
+  <!-- ==================================================== -->
+  <line x1="750" y1="210" x2="830" y2="210" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="830" y1="210" x2="830" y2="280" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="830" y1="280" x2="1180" y2="280" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="1180" y1="280" x2="1180" y2="210" stroke="#39d0d8" stroke-width="2"/>
+  <line x1="1180" y1="210" x2="1160" y2="210" stroke="#39d0d8" stroke-width="2" marker-end="url(#arr-air)"/>
+  <text x="1000" y="272" text-anchor="middle" fill="#39d0d8" font-size="8" font-family="monospace">B → rod end (retract)</text>
+
+  <!-- ==================================================== -->
+  <!-- Behavior notes (below diagram)                        -->
+  <!-- ==================================================== -->
+  <text x="30" y="380" fill="#58a6ff" font-size="13" font-family="monospace" font-weight="bold">STATE BEHAVIOR</text>
+  <line x1="30" y1="388" x2="300" y2="388" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Extend (energized) -->
+  <rect x="30" y="404" width="550" height="88" rx="5" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <text x="45" y="424" fill="#e3b341" font-size="11" font-family="monospace" font-weight="bold">Coil ENERGIZED (GPIO25 high, flap OPEN)</text>
+  <text x="45" y="444" fill="#c9d1d9" font-size="9" font-family="monospace">Spool shifts. Supply (P) routes to port A → cylinder cap end →</text>
+  <text x="45" y="458" fill="#c9d1d9" font-size="9" font-family="monospace">piston extends (rod out). Meanwhile port B connects to exhaust EB,</text>
+  <text x="45" y="472" fill="#c9d1d9" font-size="9" font-family="monospace">dumping the rod-end chamber so extension isn't fighting back-pressure.</text>
+
+  <!-- Retract (default) -->
+  <rect x="610" y="404" width="550" height="88" rx="5" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <text x="625" y="424" fill="#39d0d8" font-size="11" font-family="monospace" font-weight="bold">Coil DE-ENERGIZED (GPIO25 low, flap CLOSED — default)</text>
+  <text x="625" y="444" fill="#c9d1d9" font-size="9" font-family="monospace">Spool spring returns. Supply (P) routes to port B → rod end →</text>
+  <text x="625" y="458" fill="#c9d1d9" font-size="9" font-family="monospace">piston retracts (rod in). Port A exhausts through EA, dumping</text>
+  <text x="625" y="472" fill="#c9d1d9" font-size="9" font-family="monospace">the cap-end chamber. Retract speed is regulator-limited.</text>
+
+  <!-- ==================================================== -->
+  <!-- Legend                                                -->
+  <!-- ==================================================== -->
+  <rect x="30" y="520" width="550" height="160" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <text x="50" y="545" fill="#58a6ff" font-size="11" font-family="monospace" font-weight="bold">LEGEND</text>
+
+  <line x1="50" y1="567" x2="100" y2="567" stroke="#39d0d8" stroke-width="2" marker-end="url(#arr-air)"/>
+  <text x="115" y="571" fill="#c9d1d9" font-size="10" font-family="monospace">pressurized air (supply to valve, supply to cylinder port)</text>
+
+  <line x1="50" y1="587" x2="100" y2="587" stroke="#8b949e" stroke-width="2" stroke-dasharray="3,2" marker-end="url(#arr-vent)"/>
+  <text x="115" y="591" fill="#c9d1d9" font-size="10" font-family="monospace">exhaust to atmosphere (EA, EB, tank drain)</text>
+
+  <line x1="50" y1="607" x2="100" y2="607" stroke="#f0883e" stroke-width="2"/>
+  <text x="115" y="611" fill="#c9d1d9" font-size="10" font-family="monospace">mechanical actuator (cylinder, rod, flap linkage)</text>
+
+  <text x="50" y="635" fill="#e3b341" font-size="10" font-family="monospace">energized state = coil on = GPIO25 high = flap open</text>
+  <text x="50" y="651" fill="#39d0d8" font-size="10" font-family="monospace">default state = coil off = GPIO25 low = flap closed (fail-safe)</text>
+
+</svg>
+
+<div class="parts-list">
+  <h2>Pneumatic Bill of Materials</h2>
+  <table>
+    <tr><th>Component</th><th>Spec / Part</th><th>Purpose</th></tr>
+    <tr><td>Viair 10000 kit</td><td>12V compressor + 2 gal tank + integrated pressure switch (~110/150 PSI) + 40A relay + 40A fuse + factory harness + tank drain petcock</td><td>Air supply, self-cycling via built-in pressure switch. Tank drain serves as manual bleed at shutdown.</td></tr>
+    <tr><td>Regulator</td><td>0–125 PSI adjustable, 1/4" NPT ports, integrated gauge</td><td>Sets cylinder operating pressure below tank pressure</td></tr>
+    <tr><td>5/2 solenoid valve</td><td>AirTAC 4V210-08-FT — 5 ports, 2 positions, single-solenoid (spring-return spool), 12V coil, G1/4" ports. Four-port manifold usable with plugged unused ports.</td><td>Gates supply air between cylinder's cap end (extend) and rod end (retract). Spring-return spool guarantees retract path on coil de-energize.</td></tr>
+    <tr><td>Double-acting cylinder</td><td>MAL40×50 — 40mm bore, 50mm stroke, mini ISO 6432 style. Port threads typically M5 or G1/8 — use appropriate PTC adapters.</td><td>Drives the DRS flap open (extend) and closed (retract) with pressurized air on either side</td></tr>
+    <tr><td>Tubing</td><td>8mm OD polyurethane, 36 ft</td><td>All pneumatic interconnects. Rated for ≥150 PSI.</td></tr>
+    <tr><td>PTC fittings, straight</td><td>8mm OD to 1/4" NPT male, 6-pack</td><td>Valve, regulator, tank output terminations</td></tr>
+    <tr><td>PTC fittings, elbow</td><td>8mm OD to 1/4" NPT male, 6-pack</td><td>Cylinder ports and tight routing</td></tr>
+    <tr><td>PTC unions</td><td>8mm OD × 8mm OD, 10-pack</td><td>Joining tubing runs, test-point insertions</td></tr>
+    <tr><td>Thread sealant</td><td>Liquid — Permatex or Loctite pneumatic-rated</td><td>Seal NPT threads. Do not use tape shavings — they can lodge in the valve.</td></tr>
+  </table>
+</div>
+
+<div class="notes-list">
+  <h2>Pneumatic Notes</h2>
+  <ul>
+    <li>Both valve exhaust ports (EA and EB) vent to atmosphere. Keep them unobstructed and pointed somewhere the brief vent-puff won't spray debris onto anything sensitive. Mufflers/silencers thread onto G1/4 if cabin noise is a concern.</li>
+    <li>Fail-safe behavior (flap closes) is triggered by any of: ESP32 goes low on GPIO25, Controller Rocker OFF, Air Rocker OFF (kills coil and compressor cycling), brake interlock, or 12V bus failure. All of those de-energize the coil; the spool spring shifts; tank air routes through port B to the rod end and retracts the piston. The only failure that leaves the flap stuck is simultaneous coil de-energize + completely empty tank.</li>
+    <li>Unlike the single-acting variant we prototyped earlier, there is no cylinder-side spring and no QEV. Retract speed is governed by regulator pressure, valve Cv, tubing ID, and the size of exhaust port EA. If retract is too slow, raise regulator pressure (within cylinder spec) before touching anything else.</li>
+    <li>Cylinder mounting: watch rod alignment to the flap linkage. Side-loading the rod causes premature seal wear on the MAL series. A clevis or floating mount on both ends is the forgiving choice.</li>
+    <li>Shutdown: Air Rocker OFF → Controller Rocker OFF → engine off → open the Viair tank drain petcock (underside of tank) to bleed residual pressure. Close the petcock before next use.</li>
+    <li>Regulator setting: start low (40–50 PSI), verify the flap extends fully and crisply, verify retract is clean and fast, then tune up only if needed. Running higher than required wastes air, stresses fittings, and makes the valve click louder on every actuation.</li>
+  </ul>
+</div>
+
+</body>
+</html>

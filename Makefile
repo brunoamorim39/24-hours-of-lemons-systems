@@ -53,6 +53,7 @@ upload-firmware:
 	$(MPREMOTE) connect $(PORT) fs cp firmware/hw/gpio.py :hw/gpio.py
 	$(MPREMOTE) connect $(PORT) fs cp firmware/hw/servo.py :hw/servo.py
 	$(MPREMOTE) connect $(PORT) fs cp firmware/hw/actuator.py :hw/actuator.py
+	$(MPREMOTE) connect $(PORT) fs cp firmware/hw/led.py :hw/led.py
 	@echo "Upload complete. Reset ESP32 to run."
 
 deploy: upload-firmware

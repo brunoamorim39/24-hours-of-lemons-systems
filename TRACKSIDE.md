@@ -7,12 +7,14 @@
 ## PRE-RACE CHECKLIST
 
 - [ ] Laptop charged + USB-C cable for ESP32
-- [ ] ESP32 powered and running (verify serial output)
-- [ ] DRS button test: press → wing opens, press → wing closes
-- [ ] Brake interlock test: activate DRS → press brake → wing closes
+- [ ] Engine running before flipping dash rockers (avoids crank brownout)
+- [ ] Flip **Controller Rocker** ON → status LED flashes 3x, then off (IDLE)
+- [ ] Flip **Air System Rocker** ON → compressor spools, tank gauge climbs, regulator holds set pressure
+- [ ] Verify serial output: `DRS actuator: pneumatic` (or `servo` if running fallback)
+- [ ] DRS button test: press → flap opens + LED solid on, press → flap closes + LED off
+- [ ] Brake interlock test: activate DRS → tap brake → flap closes immediately + LED off
 - [ ] PTT test: hold button → radio keys, release → radio unkeys
-- [ ] Actuator power: 12V through fuse, common ground with ESP32
-- [ ] Verify actuator type in serial: `DRS actuator: servo` or `DRS actuator: pneumatic`
+- [ ] Shutdown sequence briefed: Air Rocker OFF → Controller Rocker OFF → engine off → open Viair tank drain petcock until gauge reads 0, then close
 
 ---
 
@@ -45,11 +47,30 @@ Look for error messages. Common issues:
 
 ### DRS Not Responding
 
-1. Check ESP32 power (USB or 5V from buck converter)
-2. Check serial output: `make esp32-monitor`
-3. Check actuator power (12V through fuse)
-4. Check GPIO4 button wiring (should short to GND)
+1. **Both rockers ON?** Controller Rocker powers ESP32; Air System Rocker powers compressor + valve coil. Either off = no actuation.
+2. Check status LED — no flash on boot means ESP32 isn't getting power (Controller Rocker, fuse, buck converter, USB cable).
+3. Check serial output: `make esp32-monitor`
+4. Check GPIO4 button wiring (should short to GND on press)
 5. Re-upload firmware if needed
+
+### Flap Opens But Retracts Slowly
+
+1. Regulator pressure too low — retract force comes from regulator pressure on the cylinder's rod end (no spring). Bump it up (within cylinder spec).
+2. Check the valve's EA exhaust port (the one that vents the cap end on retract) — if it's muffled, plugged, or pointed at a wall, it'll throttle the retract.
+3. Kinked or pinched 8mm tubing between valve B port and cylinder rod end?
+
+### Cylinder Doesn't Move At All
+
+1. Is the Air Rocker ON? (obvious but first)
+2. Tank pressure: gauge reading? Compressor cycling?
+3. Regulator gauge reading? Try bumping it up.
+4. Measure GPIO25 when DRS button pressed — should read 3.3V. If 0V, button/firmware issue. If 3.3V but no cylinder movement, MOSFET / coil / 12V-to-coil wiring broken.
+
+### Status LED Dead
+
+1. Check GPIO26 with multimeter (~3.3V on ACTIVE, 0V on IDLE, toggling on FAULT)
+2. Check 220Ω resistor inline
+3. Check LED polarity — flat side / short leg to GND
 
 ### PTT Not Working
 
@@ -58,18 +79,12 @@ Look for error messages. Common issues:
 3. Check Baofeng radio power and connection
 4. Check serial output for PTT messages
 
-### Servo Jitters or No Movement (servo mode)
+### Servo Jitters or No Movement (legacy fallback mode)
 
-1. Check common ground between ESP32 and servo
-2. Check 12V supply to servo (through 5A fuse)
-3. Check GPIO18 signal wire to servo
-
-### Solenoid Not Firing (pneumatic mode)
-
-1. Check GPIO25 output with multimeter (3.3V when DRS active)
-2. Check relay/MOSFET wiring from GPIO25 to solenoid valve
-3. Check 12V supply to solenoid valve
-4. Check air pressure (compressor running, tank not empty)
+1. Confirm `actuator_type` is `"servo"` in `firmware/config.py`
+2. Check common ground between ESP32 and servo
+3. Check 12V supply to servo (through 5A fuse)
+4. Check GPIO18 signal wire to servo
 
 ---
 
@@ -83,9 +98,10 @@ Look for error messages. Common issues:
 
 ---
 
-## CIRCUIT DIAGRAM
+## CIRCUIT DIAGRAMS
 
-Open `docs/e46-circuit.html` in any browser for full wiring reference.
+- `docs/e46-circuit.html` — electrical wiring, GPIO pins, rockers, MOSFET, LED, BOM
+- `docs/pneumatic-circuit.html` — air plumbing: Viair 10000 (compressor + tank) → regulator → 5/2 valve (A/B) → MAL40×50 double-acting cylinder
 
 ---
 
@@ -94,8 +110,9 @@ Open `docs/e46-circuit.html` in any browser for full wiring reference.
 ```
 ESP32 Serial Port: _______________________
 
-DRS Actuator Type: ______ (servo / pneumatic)
-DRS Open Angle: _______ Closed Angle: _______ (servo only)
+DRS Actuator Type: ______ (pneumatic installed; servo fallback)
+Regulator Set Pressure: _______ PSI
+Tank Cut-In / Cut-Out: _______ / _______ PSI
 
 Issues Encountered: _______________________
 _______________________________________

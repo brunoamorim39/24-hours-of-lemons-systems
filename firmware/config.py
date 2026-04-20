@@ -11,8 +11,9 @@ injection. No other module imports from this file.
 # --- Pin Assignments (ESP32 GPIO numbers) ---
 # Change these when rewiring. No other file contains pin numbers.
 PINS = {
-    "SERVO_PWM": 18,           # PWM output to servo signal wire
-    "DRS_SOLENOID_OUT": 25,    # GPIO for solenoid valve relay (pneumatic DRS)
+    "SERVO_PWM": 18,           # PWM output to servo signal wire (servo fallback only)
+    "DRS_SOLENOID_OUT": 25,    # GPIO → MOSFET gate → 5/2 solenoid valve coil (AirTAC 4V210-08)
+    "DRS_LED_OUT": 26,         # GPIO → 220Ω → dash-mounted DRS status LED → GND
     "BRAKE_SWITCH": 19,        # PC817 optocoupler output (active-low)
     "DRS_BTN": 4,              # XLR5 pin 2, momentary (active-low)
     "PTT_BTN": 21,             # XLR5 pin 3, momentary (active-low)
@@ -22,16 +23,22 @@ PINS = {
 
 # --- DRS Actuator ---
 DRS = {
-    "actuator_type": "servo",      # "servo" or "pneumatic"
-    "open_angle": 90,              # degrees — wing open position (operational setpoint)
-    "closed_angle": 0,             # degrees — wing closed position (operational setpoint)
-    "servo_min_angle": 0,          # degrees — servo mechanical min (maps to min_pulse)
-    "servo_max_angle": 120,        # degrees — servo mechanical max (maps to max_pulse)
-    "transition_time_ms": 500,     # ms — smooth transition duration (servo only)
-    "servo_min_pulse_us": 900,     # μs — pulse width at servo_min_angle (servo only)
-    "servo_max_pulse_us": 2100,    # μs — pulse width at servo_max_angle (servo only)
-    "servo_freq_hz": 333,          # Hz — SV12T native update rate (servo only)
-    "max_active_ms": 15000,        # ms — auto-close DRS after this long open (thermal safety)
+    "actuator_type": "pneumatic",  # "pneumatic" (installed) or "servo" (legacy fallback)
+    "open_angle": 90,              # degrees — wing open position (servo fallback only)
+    "closed_angle": 0,             # degrees — wing closed position (servo fallback only)
+    "servo_min_angle": 0,          # degrees — servo mechanical min (servo fallback only)
+    "servo_max_angle": 120,        # degrees — servo mechanical max (servo fallback only)
+    "transition_time_ms": 500,     # ms — smooth transition duration (servo fallback only)
+    "servo_min_pulse_us": 900,     # μs — pulse at servo_min_angle (servo fallback only)
+    "servo_max_pulse_us": 2100,    # μs — pulse at servo_max_angle (servo fallback only)
+    "servo_freq_hz": 333,          # Hz — SV12T native update rate (servo fallback only)
+}
+
+# --- DRS Status LED ---
+LED = {
+    "boot_flash_count": 3,    # flashes on startup to confirm firmware is alive
+    "boot_flash_ms": 100,     # ms per on/off half-cycle during boot flash
+    "fault_blink_ms": 500,    # ms on/off when DRS is in FAULT state
 }
 
 # --- Input Debounce ---

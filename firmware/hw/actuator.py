@@ -60,13 +60,13 @@ class PneumaticActuator:
         self._gpio.write_output(self._pin, False)
 
     def open(self):
-        """Energize solenoid valve (cylinder extends, flap opens)."""
+        """Energize 5/2 solenoid coil. Spool shifts; supply routes to cap end; cylinder extends; flap opens."""
         self._gpio.write_output(self._pin, True)
 
     def close(self):
-        """De-energize solenoid valve (spring return closes flap)."""
+        """De-energize 5/2 solenoid coil. Spool spring returns; supply routes to rod end; cylinder retracts; flap closes."""
         self._gpio.write_output(self._pin, False)
 
     def disable(self):
-        """De-energize solenoid valve (same as close — spring return is fail-safe)."""
+        """De-energize coil (same as close — fail-safe default via valve's spring-return spool)."""
         self._gpio.write_output(self._pin, False)
